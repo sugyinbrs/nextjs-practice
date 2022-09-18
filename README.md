@@ -19,8 +19,73 @@ localhost:3000/about
 localhost:3000/aboutUs
 ```
 
-<br/>
+<br />
 
 파일 내에서 jsx 를 사용 중이라면 파일 확장자를 .jsx 라고 해줄 필요가 없다.
 
 또한 `import React from 'react'` 를 할 필요도 없다.
+
+<br />
+<br />
+
+## Static Pre Rendering
+
+CRA (Clinet-Side-Rendering) 를 하는 React.js 와는 다르게
+
+미리 렌더링 하여 페이지 로딩 시 페이지를 구성하는 html 정보를 가져와서 보여준다.
+
+<br />
+
+CRA 는 브라우저가 html 을 가져올 때 비어있는 div 로 가져온다는 것을 의미한다.
+
+CRA 상에서는 네트워크 환경이 느린 환경에서는 아무 것도 없는 흰 화면만 보이다가
+
+React.js 코드가 왔을 때야 비로소 UI 를 볼 수 있다.
+
+```jsx
+// source code 상
+
+<div id="root"></div>
+```
+
+반면 Next.js 로 만들어진 페이지에서는 네트워크 환경이 늘거나 자바스크립트가 완전히 비활성화 되어 있어도
+
+유저는 html 을 볼 수 있다.
+
+```jsx
+// source code 상
+
+<div id="__next">
+  <div>
+    <h1>Hello</h1>
+  </div>
+</div>
+```
+
+<br />
+
+### hydration
+
+index.js 에 1을 더하는 버튼을 구현한 코드를 작성한 후 소스 코드를 보면
+
+해당 코드가 초기 상태로 미리 렌더링 되어 온 것을 알 수 있다.
+
+```jsx
+// source code 상
+
+<div id="__next"><div><h1>Hello <!-- -->0</h1><button>+</button></div></div>
+```
+
+Next.js 는 React.js 를 백엔드에서 동작시켜서 페이지를 미리 만들게 되는데
+
+이 때 component 를 render 하게 되고
+
+rendering 이 끝나면 html 이 되며 Next.js 는 그 html 을 페이지 소스코드에 넣는다.
+
+유저는 자바스크립트와 React.js 가 로딩되지 않았더라도 콘텐츠를 볼 수 있다.
+
+그 후 React.js 가 로딩 되었을 때, 기본적으로 이미 존재하는 것들과 연결이 되어서
+
+우리가 아는 React.js 앱이 된다.
+
+이것을 `hydration` 이라고 한다.

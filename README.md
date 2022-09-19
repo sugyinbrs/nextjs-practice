@@ -89,3 +89,38 @@ rendering 이 끝나면 html 이 되며 Next.js 는 그 html 을 페이지 소�
 우리가 아는 React.js 앱이 된다.
 
 이것을 `hydration` 이라고 한다.
+
+<br />
+<br />
+
+## Custom App
+
+Next.js parsing 순서는 아래와 같다.
+
+`_app.js -> index.js`
+
+<br />
+
+`_app.js` 는 프레임워크 내에 설정된 고정된 파일명으로
+
+해당 파일 내에 코드를 작성하면 Next.js 가 가장 먼저 읽는 특징이 있다.
+
+해당 파일 내의 함수를 읽는데 `Component`, `pageProps` 라는 2개의 prop을 함께 읽는다.
+
+```md
+Component: 렌더링 하길 원하는 파일 내의 함수
+pageProps: 모든 props 을 해당 컴포넌트로 보냄
+```
+
+여기서 `<NavBar />` 등의 고정된 컴포넌트나 global styles 등을 설정해줄 수 있다.
+
+또한 `globals.css` 파일은 `index.js` 로 import 할 수 없다. 에러가 발생한다.
+
+```
+// error
+Global CSS cannot be imported from files other than your Custom <App>.
+```
+
+컴포넌트 내에 css 를 import 하고 싶다면 반드시 module 이어야 한다.
+
+하지만 Custom App 컴포넌트가 있는 곳 (`_app.js`) 이라면 모든 global styles 를 import 할 수 있다.

@@ -124,3 +124,96 @@ Global CSS cannot be imported from files other than your Custom <App>.
 컴포넌트 내에 css 를 import 하고 싶다면 반드시 module 이어야 한다.
 
 하지만 Custom App 컴포넌트가 있는 곳 (`_app.js`) 이라면 모든 global styles 를 import 할 수 있다.
+
+<br />
+<br />
+
+## next.config.js - redirects & rewrites
+
+### redirects
+
+<strong>redirects</strong> 는 말 그대로 특정 url 을 다른 url 로 redirects 해주는 것으로 유저가 url 이 변경되는 것을 확인할 수 있다.
+
+```jsx
+// next.config.js
+
+  async redirects() {
+    return [
+      {
+        source: "/contact/:path*",
+        destination: "/form/:path*",
+        permanent: false, // 브라우저 및 검색 엔진의 정보 기억 유무
+      },
+    ];
+  },
+```
+
+위와 같이 작성하고서 실제 url 을 입력해본다면 유저는 아래와 같이 redirects 해주는 것을 알 수 있다.
+
+```
+// 입력
+http://localhost:3000/contact
+
+// redirects
+http://localhost:3000/form
+```
+
+```
+// path 가 있는 경우
+
+// 입력
+http://localhost:3000/contact/123141
+
+// redirects
+http://localhost:3000/form/123141
+```
+
+</br>
+
+### rewrites
+
+<strong>rewrites</strong> 는 유저를 redirect 시키지만 url 은 변하지 않는다.
+
+이런 특성으로 인해 유저에게 노출시키고 싶지 않은 API KEY 등의 중요 정보를 유저에게 보여주지 않으면서 페이지 전환이 가능하다.
+
+```jsx
+// next.config.js
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/movies",
+        destination: `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
+      },
+    ];
+  },
+```
+
+API_KEY 변수는 env 파일에 담고 .gitignore 에 추가 시켜준다.
+
+```jsx
+// 영화 데이터 fetching
+
+useEffect(() => {
+  (async () => {
+    const { results } = await (await fetch(`/api/movies`)).json();
+    setMovies(results);
+  })();
+}, []);
+```
+
+이렇게 한다면 새로고침 후 영화 데이터를 가져올 때 개발자 도구 network 탭에서도 api key 가 보이지 않아 우리의 정보를 숨길 수 있다.
+
+</br>
+
++) 주소에 한글이 들어가거나 &를 사용하여 파라미터를 여러 개 붙여 요청하게 된다면
+
+`encodeURI` 를 사용하면 된다.
+
+```
+// before
+destination: `http://localhost/api/foo=bar&key=val`
+
+// after
+destination: encodeURI(`http://localhost/api/foo=bar&key=val`)
+```

@@ -109,7 +109,7 @@ Next.js parsing 순서는 아래와 같다.
 
 ```md
 Component: 렌더링 하길 원하는 파일 내의 함수
-pageProps: 모든 props 을 해당 컴포넌트로 보냄
+pageProps: (server side 를 통해) 모든 props 을 해당 컴포넌트(page)로 보냄
 ```
 
 여기서 `<NavBar />` 등의 고정된 컴포넌트나 global styles 등을 설정해줄 수 있다.

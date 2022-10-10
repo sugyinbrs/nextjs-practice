@@ -217,3 +217,152 @@ destination: `http://localhost/api/foo=bar&key=val`
 // after
 destination: encodeURI(`http://localhost/api/foo=bar&key=val`)
 ```
+
+<br />
+<br />
+
+## Dynamic Routes
+
+Next.js 에서는 React.js, CRA 환경과는 다르게 react-router-dom 이 필요 없다. 폴더와 파일 이름으로 routing 이 결정 된다.
+
+예를 들어 `/moives/all` 이라는 url 을 만들어주고 싶다면 아래와 같이 생성한다.
+
+```
+pages 폴더 > movies 폴더 > all.js 파일 생성
+
+../pages/movies/all.js
+```
+
+그런데 `movies/all` 뿐만 아니라 `/movies` 도 만들어주고 싶다면 아래와 같이 생성한다.
+
+```
+pages 폴더 > movies 폴더 > index.js 파일 생성
+
+../pages/movies/index.js
+```
+
+정리하자면 movies 폴더 하위에 index.js 는 `/movies` 경로가 되며
+
+all.js 는 `/movies/all` 경로가 된다.
+
+</br>
+
+그렇다면 url 에 변수가 필요하다는 것은 어떻게 알려주어야 할까.
+
+아래와 같이 파일을 생성해준다.
+
+```
+pages 폴더 > movies 폴더 > [id].js 파일 생성
+
+../pages/movies/[id].js
+```
+
+해당 [id].js 파일은 `/movies/1213` 등의 경로 페이지를 보여줄 페이지가 된다.
+
+정리하자면 Next.js 에게 이것이 변수를 포함하는 Dynamic URL 이다는 것을 알려주는 방법은 `[id].js` 같이 대괄호로 파일 이름을 지정해주어야 한다.
+
+</br>
+
+### page navigation
+
+페이지를 이동할 때에는 2가지 방법을 사용할 수 있다.
+
+1. Link & a tag
+
+```jsx
+<h4>
+  <Link href={`/movies/${movie.id}`} key={movie.id}>
+    <a>{movie.original_title}</a>
+  </Link>
+</h4>
+```
+
+2. useRouter push method (유저가 form 등 제출 시 자동으로 navigating 해주고자 할 때)
+
+```jsx
+const router = useRouter();
+const onClick = (id) => {
+  router.push(`/movies/${id}`);
+};
+
+...
+
+  <div
+    onClick={() => {
+      onClick(movie.id);
+    }}
+    className="movie"
+    key={movie.id}
+  >
+```
+
+그 외에도 url 에 현재 정보를 숨겨 보낼 수 있는 방법도 있다.
+
+url 에서 url 로 state 를 넘겨주는 방법과 넘긴 정보를 유저로부터 숨기는 방법도 배워본다.
+
+우리가 router.push 를 할 때는 url 을 string 으로 보낼 수도 있지만 객체로도 보내줄 수 있다.
+
+```jsx
+// string
+const onClick = (id) => {
+  router.push(`/movies/${id}`);
+};
+
+// object
+const onClick = (id) => {
+  router.push({
+    pathname: `/movies/${id}`,
+    query: {
+      title: "potatos",
+    },
+  });
+};
+```
+
+객체로 보냈을 때 브라우저 상에서는 다음과 같이 확인되는 것을 알 수 있다.
+
+movie id 와 query 를 확인할 수 있다.
+
+```
+http://localhost:3000/movies/985939?title=potatos
+```
+
+하지만 위처럼 title 이 url 에 보이는 형태는 보기 좋지도 않고 유저에게 필요하지 않으니 숨기는 것이 좋을 듯 하다.
+
+그 때 필요한 router.push method 의 option 이 as 이다.
+
+as 는 브라우저 url 을 마스킹한다. (@param as — masks url for the browser)
+
+객체 상태에서는 아래와 같이 마스킹 처리 해줄 수 있다.
+
+```jsx
+const onClick = (id, title) => {
+  router.push(
+    {
+      pathname: `/movies/${id}`,
+      query: {
+        title,
+      },
+    },
+    `/movies/${id}`
+  );
+};
+```
+
+그리고 2번 방법은 1번에서도 적용시켜줄 수 있다.
+
+```jsx
+<h4>
+  <Link
+    href={{
+      pathname: `/movies/${movie.id}`,
+      query: {
+        title: movie.original_title,
+      },
+    }}
+    as={`/movies/${movie.id}`}
+  >
+    <a>{movie.original_title}</a>
+  </Link>
+</h4>
+```
